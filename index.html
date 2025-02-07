@@ -264,7 +264,13 @@
     resize: vertical; /* Permet à l'utilisateur d'agrandir si nécessaire */
 }
 
-
+#modularity-class-input {
+    width: 60px;
+    font-size: 14px;
+    padding:2px;
+    margin: 0px;
+    text-align: left;
+}
 
 #filter-container {
     margin-bottom: 5px;
@@ -280,13 +286,12 @@
     display: inline-block;
     width: 100px; /* Alignement des libellés */
     text-align: right;
-    margin-right: 5px;
+    margin-right: 10px;
     font-weight: bold;
 }
 
 #filter-container input {
-     
-	width:40px;
+    width: 50px;
     font-size: 14px;
     padding: 5px;
     text-align: center;
@@ -301,7 +306,6 @@
     border-radius: 5px;
     font-size: 12px;
     margin-left: 5px;
-	 
 }
 
 #filter-container button:hover {
@@ -366,22 +370,22 @@
 
 			<!-- Zone de saisie pour le filtrage -->
 <div id="filter-container">
-    <label for="modularity-class-input">Modularity Class:</label>
-    <input type="text" id="modularity-class-input" placeholder="valeur">
+    <label>Groupe n° :</label>
+    <input type="number" id="modularity-class-input" min="0" max="99" placeholder="0-99">
+    <button id="filter-modularity">Filtrer</button><br>
 
-    <label for="degree-total-input">Degré Total:</label>
-    <input type="text" id="degree-total-input" placeholder="valeur">
+    <label>Relations :</label>
+    <input type="number" id="degree-total-input" min="0" max="999" placeholder="0-999">
+    <button id="filter-degree-total">Filtrer</button><br>
 
-    <label for="degree-in-input">Degré Entrant:</label>
-    <input type="text" id="degree-in-input" placeholder="valeur">
+    <label>Influenceurs :</label>
+    <input type="number" id="degree-in-input" min="0" max="999" placeholder="0-999">
+    <button id="filter-degree-in">Filtrer</button><br>
 
-    <label for="degree-out-input">Degré Sortant:</label>
-    <input type="text" id="degree-out-input" placeholder="valeur">
+    <label>Influencés :</label>
+    <input type="number" id="degree-out-input" min="0" max="999" placeholder="0-999">
+    <button id="filter-degree-out">Filtrer</button><br>
 
-    <button id="filter-modularity">Filtrer</button>
-    <button id="filter-degree-total">Filtrer</button>
-    <button id="filter-degree-in">Filtrer</button>
-    <button id="filter-degree-out">Filtrer</button>
 </div>
 
 
@@ -914,30 +918,7 @@ function attachHoverEvents() {
 	
 	
 	// 2️⃣ Fonction de filtrage à ajouter après l'initialisation du graphe
-	
-	function filterGraph(attribute, inputId) {
-   
-
-   const input = document.getElementById(inputId);
-    if (!input) {
-        console.error(`❌ Erreur : Impossible de trouver l'élément ${inputId}`);
-        return;
-    }
-    
-    const value = input.value.trim();
-    
-    if (!value) { // Si le champ est vide, on n'applique pas le filtre
-        console.log(`🟢 Aucun filtre appliqué pour ${attribute}`);
-        return;
-    }
-
-    console.log(`🎯 Filtrage appliqué : ${attribute} = ${value}`);
-    applyFilter(attribute, value);
-
-
-	
-	
-	//function filterGraph(attribute, value) {
+function filterGraph(attribute, value) {
     if (!value) {
         alert(`Veuillez entrer une valeur pour ${attribute}.`);
         return;
@@ -987,29 +968,28 @@ renderer.refresh();
 	
 }
 // 3️⃣ Associer les boutons de filtrage aux fonctions correspondantes
-
-document.getElementById("filter-modularity")?.addEventListener("click", () => {
-    filterGraph("Modularity Class", "modularity-class-input");
+document.getElementById("filter-modularity").addEventListener("click", () => {
+    const value = document.getElementById("modularity-class-input").value.trim();
+    filterGraph("Modularity Class", value);
 });
 
-document.getElementById("filter-degree-total")?.addEventListener("click", () => {
-    filterGraph("Degré", "degree-total-input");
+document.getElementById("filter-degree-total").addEventListener("click", () => {
+    const value = document.getElementById("degree-total-input").value.trim();
+    filterGraph("Degré", value);
 });
 
-document.getElementById("filter-degree-in")?.addEventListener("click", () => {
-    filterGraph("Degré Entrant", "degree-in-input");
+document.getElementById("filter-degree-in").addEventListener("click", () => {
+    const value = document.getElementById("degree-in-input").value.trim();
+    filterGraph("Degré Entrant", value);
 });
 
-document.getElementById("filter-degree-out")?.addEventListener("click", () => {
-    filterGraph("Degré Sortant", "degree-out-input");
+document.getElementById("filter-degree-out").addEventListener("click", () => {
+    const value = document.getElementById("degree-out-input").value.trim();
+    filterGraph("Degré Sortant", value);
 });
 
 
-	function removeFilter(attribute) {
-    console.log(`🗑️ Suppression du filtre : ${attribute}`);
-    initializeFilters(); // Réinitialise les champs de saisie
-}
-
+	
 	
 	
 	
@@ -1096,45 +1076,20 @@ document.getElementById("filter-degree-out")?.addEventListener("click", () => {
 	// LA FONCTION APPLYFILTER EST APPELÉE DANS LE BOUTON "AFFICHER LE SOUS GRAPHE"
 	
 	// Attacher explicitement la fonction à l'objet global
-       function applyFilter(attribute, value) {
-    if (!attribute || value === null || value === undefined || value.trim() === "") {
-        console.error("❌ Erreur : Attribut ou valeur invalide dans applyFilter", { attribute, value });
-        alert("Veuillez entrer une valeur correcte pour appliquer le filtre.");
-        return;
-    }
-    
-    if (!renderer || typeof renderer.getGraph !== "function") {
-        console.error("❌ Renderer non défini ou graph introuvable");
-        return;
-    }
-    
-    console.log(`✅ Application du filtre : ${attribute} = ${value}`);
+        window.applyFilter = function applyFilter() 
+		{
+            const attribute = document.getElementById('attribute').value;
+            const value = document.getElementById('value').value;
 
-    const subgraph = new graphology.Graph();
+            if (!attribute || !value) {
+                alert('Veuillez entrer un attribut et une valeur.');
+                return;
+            }
 
-    renderer.getGraph().forEachNode((nodeId, attributes) => {
-        if (attributes.attributes && attributes.attributes[attribute] !== undefined && attributes.attributes[attribute] == value) {
-            subgraph.addNode(nodeId, { ...attributes });
-        }
-    });
-
-    renderer.getGraph().forEachEdge((edgeId, attributes, source, target) => {
-        if (subgraph.hasNode(source) && subgraph.hasNode(target)) {
-            subgraph.addEdge(source, target, { ...attributes });
-        }
-    });
-
-    if (subgraph.order === 0) {
-        console.warn(`⚠️ Aucun élément trouvé avec ${attribute} = ${value}`);
-        alert(`Aucun élément trouvé avec ${attribute} = ${value}`);
-        return;
-    }
-
-    renderer.setGraph(subgraph);
-    renderer.refresh();
-    console.log(`✅ Sous-graphe mis à jour avec ${attribute} = ${value}`);
-}
-
+            console.log(`Affichage du sous-graphe pour ${attribute} = ${value}`);
+			
+			filterGraph(attribute, value);
+        };
 	// FIN DE LA FONCTION POUR APPLIQUER LE FILTRE	
 
 
@@ -1236,136 +1191,11 @@ function afficherNoeud(nodeId) {
 		}
 	});
 </script>
-
-
-
-
-<script>
-
-
-// ✅ Mode test pour activer/désactiver les nouvelles fonctionnalités de filtre
-const testNewFilterSystem = true; // Passe à false pour garder l'ancien comportement
-
-// ✅ Initialisation des filtres au chargement de la page
-document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(initializeFilters, 500); // Assurer que les éléments sont chargés
-});
-
-// ✅ Initialisation des filtres avec un champ vide par défaut
-function initializeFilters() {
-    console.log("🔄 Initialisation des filtres...");
-    
-    const filters = [
-        "modularity-class-input",
-        "degree-total-input",
-        "degree-in-input",
-        "degree-out-input"
-    ];
-
-    filters.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.value = ""; // Champ vide par défaut
-        } else {
-            console.error(`❌ Erreur : Impossible de trouver l'élément ${id}`);
-        }
-    });
-    
-    console.log("✅ Filtres initialisés avec un champ vide");
-}
-
-// ✅ Fonction pour gérer les filtres avec la nouvelle gestion
-function filterGraph(attribute, inputId) {
-    const input = document.getElementById(inputId);
-    if (!input) {
-        console.error(`❌ Erreur : Impossible de trouver l'élément ${inputId}`);
-        return;
-    }
-    
-    const value = input.value.trim();
-    if (!value) { // Si le champ est vide, on n'applique pas le filtre
-        console.log(`🟢 Aucun filtre appliqué pour ${attribute}`);
-        return;
-    }
-
-    console.log(`🎯 Filtrage appliqué : ${attribute} = ${value}`);
-    applyFilter(attribute, value);
-}
-
-// ✅ Appliquer le filtre sur le graphe
-function applyFilter(attribute, value) {
-    if (!renderer || typeof renderer.getGraph !== "function") {
-        console.error("❌ Renderer non défini ou graph introuvable");
-        return;
-    }
-    
-    const subgraph = new graphology.Graph();
-
-    renderer.getGraph().forEachNode((nodeId, attributes) => {
-        if (attributes.attributes && attributes.attributes[attribute] !== undefined && attributes.attributes[attribute] == value) {
-            subgraph.addNode(nodeId, { ...attributes });
-        }
-    });
-
-    renderer.getGraph().forEachEdge((edgeId, attributes, source, target) => {
-        if (subgraph.hasNode(source) && subgraph.hasNode(target)) {
-            subgraph.addEdge(source, target, { ...attributes });
-        }
-    });
-
-    if (subgraph.order === 0) {
-        console.warn(`⚠️ Aucun élément trouvé avec ${attribute} = ${value}`);
-        alert(`Aucun élément trouvé avec ${attribute} = ${value}`);
-        return;
-    }
-
-    renderer = new window.Sigma(subgraph, document.getElementById('sigma-container'), {
-        defaultNodeColor: '#FF5733',
-        defaultEdgeColor: '#3498DB',
-        labelSize: 12,
-        labelSizeRatio: 2.0,
-        labelThreshold: 0,
-        font: 'Arial',
-        labelColor: { by: 'node', attribute: 'labelColor', default: 'black' },
-        minNodeSize: 5,
-        maxNodeSize: 30,
-        minEdgeSize: 1,
-        maxEdgeSize: 5,
-        zoomingRatio: 1.1,
-        enableEdgeHovering: true,
-        enableEdgeLabel: true,
-        renderLabels: true,
-        labelRenderedSizeThreshold: 0
-    });
-    renderer.refresh();
-    console.log(`✅ Sous-graphe mis à jour avec ${attribute} = ${value}`);
-}
-
-// ✅ Ajouter les écouteurs d'événements pour activer les filtres
-if (testNewFilterSystem) {
-    document.getElementById("filter-modularity")?.addEventListener("click", () => {
-        filterGraph("Modularity Class", "modularity-class-input");
-    });
-
-    document.getElementById("filter-degree-total")?.addEventListener("click", () => {
-        filterGraph("Degré", "degree-total-input");
-    });
-
-    document.getElementById("filter-degree-in")?.addEventListener("click", () => {
-        filterGraph("Degré Entrant", "degree-in-input");
-    });
-
-    document.getElementById("filter-degree-out")?.addEventListener("click", () => {
-        filterGraph("Degré Sortant", "degree-out-input");
-    });
-}
-
-
-</script>
-
-
 </body>
 </html>
 
 	 
- 
+</script>
+</body>
+
+</html>
