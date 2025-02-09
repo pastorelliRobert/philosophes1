@@ -713,6 +713,25 @@ function attachHoverEvents() {
     });
 
    
+   function applyCircularLayout(graph) {
+    const nodes = graph.nodes();
+    const totalNodes = nodes.length;
+    const radius = Math.max(150, totalNodes * 10); // Plus de nœuds = plus grand rayon
+
+    nodes.forEach((nodeId, index) => {
+        const angle = (index / totalNodes) * 2 * Math.PI;
+        graph.setNodeAttribute(nodeId, "x", Math.cos(angle) * radius);
+        graph.setNodeAttribute(nodeId, "y", Math.sin(angle) * radius);
+    });
+}
+
+// Appliquer la spatialisation circulaire après la création du graphe des voisins
+applyCircularLayout(subgraph);
+renderer.refresh();
+
+   
+   
+   
 	renderer.refresh();
 
     //console.log('Sous-graphe des voisins affiché');
