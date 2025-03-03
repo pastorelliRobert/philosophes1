@@ -1080,7 +1080,7 @@ document.getElementById("reset-neighbors-graph").addEventListener("click", resto
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// UTILISATION DE FETCH POUR CHARGER LES DONNÉES DEPUIS LE DOSSIER ./js
-		fetch('./js/graphe_louvain_3size.json')
+		fetch('graphe_louvain_3size.json')
 		.then(response => {
 				// Vérifier si la réponse est obtenue
 				if (!response.ok) { console.log("pas de reponse à fetch" );	}				
