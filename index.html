@@ -897,7 +897,7 @@ function attachHoverEvents() {
 	});
 	
 	//titre du graphe
-	document.getElementById('graph-title').textContent = `Graphe des voisins de ${renderer.getGraph().getNodeAttribute(nodeId, 'label-court')} =>`;
+	document.getElementById('graph-title').textContent = `Graphe des relations de ${renderer.getGraph().getNodeAttribute(nodeId, 'label-court')} =>`;
 	
 	lastClickedNode = nodeId; // Mémorise le philosophe central
     lastNeighborsGraph = new graphology.Graph(); // Initialise un nouveau graphe vide
@@ -1557,7 +1557,7 @@ function afficherNoeud(nodeId) {
 	else
 	{
      // Met à jour le titre de la colonne de gauche
-    document.getElementById("graph-title").textContent = `Voisins de ${maingraph.getNodeAttribute(nodeId, "label")}`;
+    document.getElementById("graph-title").textContent = `Relations de ${maingraph.getNodeAttribute(nodeId, "label")}`;
 
     // Met à jour la liste des voisins en utilisant `maingraph`
     listevoisins(nodeId, maingraph); 
